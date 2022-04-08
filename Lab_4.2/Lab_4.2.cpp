@@ -46,6 +46,91 @@ stats Shell_Sort(std::vector<int>& data)
     return stat;
 }
 
+stats Two_Way_Merge_Sort(std::vector<int>& data)
+{
+    stats stat;
+    std::vector<int> temp(2*data.size());
+    for (size_t i = 0; i < data.size(); i++)
+    {
+        temp[i] = data[i];
+        temp[i + data.size()] = data[i];
+    }
+    int s=1;
+    int i;
+    int j;
+    int k;
+    int g;
+    bool flag = false;
+    while (flag==false)
+    {
+        s = 1 - s;
+        int d = 1;
+        flag = true;
+        if (s == 0)
+        {
+            i = 1;
+            j = data.size();
+            k = j + 1;
+            g = 2 * data.size();
+        }
+        else {
+            i = data.size() + 1;
+            j = data.size() * 2;
+            k = 1;
+            g = data.size();
+        }
+        while (i != j)
+        {
+            if (temp[i] > temp[j])
+            {
+                temp[k] = temp[j];
+                k = k + d;
+                j = j - 1;
+                if (temp[j + 1] > temp[j])
+                {
+                    while (temp[i - 1] < temp[i])
+                    {
+                        temp[k] = temp[i];
+                        k = k + d;
+                        i = i + 1;
+                    }
+                    flag = false;
+                    d = -d;
+                    int p = k;
+                    k = g;
+                    g = p;
+                }
+            }
+            else
+            {
+                temp[k] = temp[i];
+                k = k + d;
+                j = i + 1;
+                if (temp[i - 1] > temp[i])
+                {
+                    while (temp[j + 1] < temp[j])
+                    {
+                        temp[k] = temp[j];
+                        k = k + d;
+                        j = j - 1;
+                    }
+                    flag = false;
+                    d = -d;
+                    int p = k;
+                    k = g;
+                    g = p;
+                }
+            }
+        }
+        temp[k] = temp[i];
+    }
+    if (s == 0)
+    {
+        for (size_t i = 0; i < data.size(); i++) data[i] = temp[i+data.size()];
+    }
+    return stat;
+}
+
 int main()
 {
     stats stat;
@@ -69,7 +154,7 @@ int main()
         std::cout << *i << " ";
     }
     std::cout << "\n";
-    stat = Shell_Sort(v2);
+    stat = Two_Way_Merge_Sort(v2);
     for (auto i = v2.begin(); i != v2.end(); ++i)
     {
         std::cout << *i << " ";
