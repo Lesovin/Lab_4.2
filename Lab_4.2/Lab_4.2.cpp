@@ -46,87 +46,160 @@ stats Shell_Sort(std::vector<int>& data)
     return stat;
 }
 
-stats Two_Way_Merge_Sort(std::vector<int>& data)
+stats Two_Way_Merge_Sort(std::vector<int>& data) 
 {
     stats stat;
-    std::vector<int> temp(2*data.size());
-    for (size_t i = 0; i < data.size(); i++)
+    std::vector<int> res(data.size());
+    size_t resl = 0;
+    size_t resr = res.size() - 1;
+    size_t podsize=2;
+    while (true)
     {
-        temp[i] = data[i];
-        temp[i + data.size()] = data[i];
-    }
-    int s=1;
-    int i;
-    int j;
-    int k;
-    int g;
-    bool flag = false;
-    while (flag==false)
-    {
-        s = 1 - s;
-        int d = 1;
-        flag = true;
-        if (s == 0)
+        size_t resl = 0; // Левая граница неотсортированной последовательности в res
+        size_t resr = res.size() - 1; // Правая граница неотсортированной последовательности в res
+        bool left = true;
+        size_t vecl = 0; // Индекс левой границы неотсортированной последовательности в data
+        size_t vecr = data.size() - 1; // Индекс правой границы неотсортированной последовательности в data
+        while (vecl < vecr)
         {
-            i = 1;
-            j = data.size();
-            k = j + 1;
-            g = 2 * data.size();
-        }
-        else {
-            i = data.size() + 1;
-            j = data.size() * 2;
-            k = 1;
-            g = data.size();
-        }
-        while (i != j)
-        {
-            if (temp[i] > temp[j])
+            size_t i = vecl;
+            size_t j = vecr;
+            while (vecl <= vecr && data[vecl] < data[vecl + 1])
             {
-                temp[k] = temp[j];
-                k = k + d;
-                j = j - 1;
-                if (temp[j + 1] > temp[j])
-                {
-                    while (temp[i - 1] < temp[i])
-                    {
-                        temp[k] = temp[i];
-                        k = k + d;
-                        i = i + 1;
-                    }
-                    flag = false;
-                    d = -d;
-                    int p = k;
-                    k = g;
-                    g = p;
-                }
+                stat.comparison_count++;
+                vecl++;
+                podsize++;
+                if (vecl == res.size() - 1) return stat;
             }
-            else
+            while (vecl <= vecr && data[vecr] < data[vecr - 1])
             {
-                temp[k] = temp[i];
-                k = k + d;
-                j = i + 1;
-                if (temp[i - 1] > temp[i])
-                {
-                    while (temp[j + 1] < temp[j])
-                    {
-                        temp[k] = temp[j];
-                        k = k + d;
-                        j = j - 1;
-                    }
-                    flag = false;
-                    d = -d;
-                    int p = k;
-                    k = g;
-                    g = p;
-                }
+                stat.comparison_count++;
+                vecr--;
+                podsize++;
             }
+            if (left) 
+            {
+                for (size_t p = 0; p < podsize; ++p) 
+                {
+                    if (i <= vecl)
+                    {
+                        if (j < vecr) // Если вся правая подпоследовательность уже перебрана, то поочередно записываем левую последовательность
+                        { 
+                            res[resl] = data[i];
+                            stat.copy_count++;
+                            resl++;
+                            i++; 
+                            continue;
+                        }
+                        else if (data[i] < data[j]) //Если правая подпоследовательность не целиком рассмотрена, то нужно сравнивать
+                        { 
+                            stat.comparison_count++;
+                            res[resl] = data[i];
+                            stat.copy_count++;
+                            resl++;
+                            i++; 
+                            continue;
+                        }
+                        else if (i == j)
+                        {
+                            res[resl] = data[i];
+                            stat.copy_count++;
+                            break;
+                        }
+                    }
+                    if (j >= vecr) 
+                    {
+                        if (i > vecl) // Вся левая подпоследовательность рассмотрена
+                        { 
+                            res[resl] = data[j];
+                            stat.copy_count++;
+                            resl++;
+                            j--; 
+                            continue;
+                        }
+                        else if (data[j] < data[i]) //Если левая подпоследовательность не целиком рассмотрена, то нужно сравнивать
+                        { 
+                            stat.comparison_count++;
+                            res[resl] = data[j];
+                            stat.copy_count++;
+                            resl++;
+                            j--; 
+                            continue;
+                        }
+                        else if (i == j)
+                        {
+                            res[resl] = data[i];
+                            stat.copy_count++;
+                            break;
+                        }
+                    }
+                }
+                left = !left;
+            }
+            else {
+                for (size_t p = 0; p < podsize; ++p) 
+                {
+                    if (i <= vecl) 
+                    {
+                        if (j < vecr) // Если вся правая подпоследовательность уже перебрана, то поочередно записываем левую последовательность
+                        { 
+                            res[resr] = data[i];
+                            stat.copy_count++;
+                            resr--;
+                            i++; 
+                            continue;
+                        }
+                        else if (data[i] < data[j]) //Если правая подпоследовательность не целиком рассмотрена, то нужно сравнивать
+                        { 
+                            stat.comparison_count++;
+                            res[resr] = data[i];
+                            stat.copy_count++;
+                            resr--;
+                            i++; 
+                            continue;
+                        }
+                        else if (i == j)
+                        {
+                            res[resl] = data[i];
+                            stat.copy_count++;
+                            break;
+                        }
+                    }
+                    if (j >= vecr && data[j] < data[i]) 
+                    {
+                        stat.comparison_count++;
+                        if (i > vecl) // Вся левая подпоследовательность рассмотрена
+                        { 
+                            res[resr] = data[j];
+                            stat.copy_count++;
+                            resr--;
+                            j--; 
+                            continue;
+                        }
+                        else if (data[j] < data[i]) //Если левая подпоследовательность не целиком рассмотрена, то нужно сравнивать
+                        { 
+                            stat.comparison_count++;
+                            res[resr] = data[j];
+                            stat.copy_count++;
+                            resr--;
+                            j--; 
+                            continue;
+                        }
+                        else if (i == j)
+                        {
+                            res[resl] = data[i];
+                            stat.copy_count++;
+                            break;
+                        }
+                    }
+                }
+                left = !left;
+            }
+            vecl++;
+            vecr--;
         }
-        temp[k] = temp[i];
-    }
-    if (s == 0)
-    {
-        for (size_t i = 0; i < data.size(); i++) data[i] = temp[i+data.size()];
+        data = res;
+        for (size_t k = 0; k < res.size(); k++) res[k] = 0;
     }
     return stat;
 }
@@ -154,7 +227,7 @@ int main()
         std::cout << *i << " ";
     }
     std::cout << "\n";
-    stat = Two_Way_Merge_Sort(v2);
+    stat=Two_Way_Merge_Sort(v2);
     for (auto i = v2.begin(); i != v2.end(); ++i)
     {
         std::cout << *i << " ";
