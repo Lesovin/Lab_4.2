@@ -64,14 +64,14 @@ stats Two_Way_Merge_Sort(std::vector<int>& data)
         {
             size_t i = vecl;
             size_t j = vecr;
-            while (vecl <= vecr && data[vecl] < data[vecl + 1])
+            while (vecl <= vecr && data[vecl] <= data[vecl + 1])
             {
                 stat.comparison_count++;
                 vecl++;
                 podsize++;
                 if (vecl == res.size() - 1) return stat;
             }
-            while (vecl <= vecr && data[vecr] < data[vecr - 1])
+            while (vecl <= vecr && data[vecr] <= data[vecr - 1])
             {
                 stat.comparison_count++;
                 vecr--;
@@ -208,7 +208,7 @@ int main()
 {
     stats stat;
     std::vector<int> v1 = { 3,1,7,9,6,4,2,5,10,8 };
-    std::vector<int> v2 = { 3,1,7,9,6,4,2,5,10,8 };
+    std::vector<int> v2 = { 3,1,7,9,6,4,2,2,10,8 };
     for (auto i = v1.begin(); i!=v1.end();++i)
     {
         std::cout << *i<<" ";
